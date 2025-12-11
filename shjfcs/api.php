@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $isSpecificSearch = isset($_POST['isSpecificSearch']) ? (int)$_POST['isSpecificSearch'] : 0;
             $establishments = [];
             // تحديد الحقول مع التأكد من Sub_Sector وshfhsp وجميع الحقول المطلوبة
-            $selectFields = "ID, license_no, unique_id, facility_name, brand_name, area, sub_area, activity_type, hazard_class,
+            $selectFields = "ID, license_no, unique_id, facility_name, brand_name, area, sub_area, description, activity_type, hazard_class,
                              LicenseIssuing, ltype, sub_no, Building, detailed_activities, facility_status, unit, Sub_UNIT,
                              site_coordinates, Sector, Sub_Sector, shfhsp, lstart_date, lend_date, user, area_id, phone_number, email, front_image_url, entry_permit_no, created_at, updated_at";
             if (empty($searchTerm)) {
@@ -1434,7 +1434,7 @@ case 'update_inspection_date':
             }
             try {
                 // Ensure all fields are selected here as well
-                $selectFields = "ID, license_no, unique_id, facility_name, brand_name, area, sub_area, activity_type, hazard_class,
+                $selectFields = "ID, license_no, unique_id, facility_name, brand_name, area, sub_area, description, activity_type, hazard_class,
                                  LicenseIssuing, ltype, sub_no, Building, detailed_activities, facility_status, unit, Sub_UNIT,
                                  site_coordinates, Sector, Sub_Sector, shfhsp, lstart_date, lend_date, user, area_id, phone_number, email, front_image_url, entry_permit_no, created_at, updated_at";
                 $stmt = $conn->prepare("
