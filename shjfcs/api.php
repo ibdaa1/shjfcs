@@ -1510,6 +1510,296 @@ case 'update_inspection_date':
             echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
             ob_end_flush();
             break;
+        
+        // ✅ Get attachments for inspection
+        case 'get_attachments':
+            $inspection_id = $_POST['inspection_id'] ?? null;
+            
+            if (!$inspection_id) {
+                $response_data = [
+                    'success' => false,
+                    'message' => 'معرف التفتيش مطلوب',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+                echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                ob_end_flush();
+                break;
+            }
+            
+            try {
+                $stmt = $conn->prepare("
+                    SELECT id, inspection_id, filename, file_path, file_size, uploaded_at
+                    FROM tbl_inspection_attachments
+                    WHERE inspection_id = ?
+                    ORDER BY uploaded_at DESC
+                ");
+                
+                if (!$stmt) {
+                    throw new Exception("Failed to prepare statement: " . $conn->error);
+                }
+                
+                $stmt->bind_param("i", $inspection_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                $attachments = [];
+                while ($row = $result->fetch_assoc()) {
+                    $attachments[] = $row;
+                }
+                $stmt->close();
+                
+                $response_data = [
+                    'success' => true,
+                    'attachments' => $attachments,
+                    'message' => 'تم جلب المرفقات بنجاح',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            } catch (Exception $e) {
+                logError("Error in get_attachments: " . $e->getMessage(), ['inspection_id' => $inspection_id]);
+                $response_data = [
+                    'success' => false,
+                    'message' => 'خطأ في جلب المرفقات: ' . $e->getMessage(),
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            ob_end_flush();
+            break;
+        
+        // ✅ Delete attachment with permission check
+        case 'delete_attachment':
+            $attachment_id = $_POST['attachment_id'] ?? null;
+            
+            if (!$attachment_id) {
+                $response_data = [
+                    'success' => false,
+                    'message' => 'معرف المرفق مطلوب',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+                echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                ob_end_flush();
+                break;
+            }
+            
+            // 🔒 Check user permissions
+            if (!$loggedInUserId) {
+                $response_data = [
+                    'success' => false,
+                    'message' => 'يجب تسجيل الدخول لحذف المرفقات',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+                echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                ob_end_flush();
+                break;
+            }
+            
+            try {
+                // Get attachment details
+                $stmt = $conn->prepare("
+                    SELECT a.file_path, a.inspection_id, i.inspector_user_id
+                    FROM tbl_inspection_attachments a
+                    LEFT JOIN tbl_inspections i ON a.inspection_id = i.inspection_id
+                    WHERE a.id = ?
+                ");
+                
+                if (!$stmt) {
+                    throw new Exception("Failed to prepare statement: " . $conn->error);
+                }
+                
+                $stmt->bind_param("i", $attachment_id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $attachment = $result->fetch_assoc();
+                $stmt->close();
+                
+                if (!$attachment) {
+                    throw new Exception("المرفق غير موجود");
+                }
+                
+                // Check permission: user must be the inspector or admin
+                $isAdmin = $_SESSION['user']['IsAdmin'] ?? 0;
+                if ($attachment['inspector_user_id'] != $loggedInUserId && $isAdmin != 1) {
+                    throw new Exception("لا تملك صلاحية حذف هذا المرفق");
+                }
+                
+                // Delete file from filesystem
+                $file_path = $attachment['file_path'];
+                if (file_exists($file_path)) {
+                    if (!unlink($file_path)) {
+                        logError("Failed to delete file: " . $file_path, ['attachment_id' => $attachment_id]);
+                    }
+                }
+                
+                // Delete from database
+                $stmt_delete = $conn->prepare("DELETE FROM tbl_inspection_attachments WHERE id = ?");
+                if (!$stmt_delete) {
+                    throw new Exception("Failed to prepare delete statement: " . $conn->error);
+                }
+                
+                $stmt_delete->bind_param("i", $attachment_id);
+                if (!$stmt_delete->execute()) {
+                    throw new Exception("Failed to delete attachment record: " . $stmt_delete->error);
+                }
+                $stmt_delete->close();
+                
+                $response_data = [
+                    'success' => true,
+                    'message' => 'تم حذف المرفق بنجاح',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            } catch (Exception $e) {
+                logError("Error in delete_attachment: " . $e->getMessage(), ['attachment_id' => $attachment_id]);
+                $response_data = [
+                    'success' => false,
+                    'message' => 'فشل حذف المرفق: ' . $e->getMessage(),
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            ob_end_flush();
+            break;
+        
+        // ✅ Upload attachment with permission check
+        case 'upload_attachment':
+            $inspection_id = $_POST['inspection_id'] ?? null;
+            
+            if (!$inspection_id) {
+                $response_data = [
+                    'success' => false,
+                    'message' => 'معرف التفتيش مطلوب',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+                echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                ob_end_flush();
+                break;
+            }
+            
+            // 🔒 Check user permissions
+            if (!$loggedInUserId) {
+                $response_data = [
+                    'success' => false,
+                    'message' => 'يجب تسجيل الدخول لرفع المرفقات',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+                echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                ob_end_flush();
+                break;
+            }
+            
+            // Check permission: user must be the inspector or admin
+            try {
+                $stmt_check = $conn->prepare("SELECT inspector_user_id FROM tbl_inspections WHERE inspection_id = ?");
+                if (!$stmt_check) {
+                    throw new Exception("Failed to prepare permission check: " . $conn->error);
+                }
+                $stmt_check->bind_param("i", $inspection_id);
+                $stmt_check->execute();
+                $result_check = $stmt_check->get_result();
+                $inspection = $result_check->fetch_assoc();
+                $stmt_check->close();
+                
+                if (!$inspection) {
+                    throw new Exception("التفتيش غير موجود");
+                }
+                
+                $isAdmin = $_SESSION['user']['IsAdmin'] ?? 0;
+                if ($inspection['inspector_user_id'] != $loggedInUserId && $isAdmin != 1) {
+                    throw new Exception("لا تملك صلاحية رفع مرفقات لهذا التفتيش");
+                }
+                
+                // Check if files were uploaded
+                if (!isset($_FILES['attachments']) || empty($_FILES['attachments']['name'][0])) {
+                    throw new Exception("لم يتم اختيار ملفات للرفع");
+                }
+                
+                // Create upload directory if not exists
+                $upload_dir = 'uploads/inspections/attachments/';
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0755, true);
+                }
+                
+                $uploaded_files = [];
+                $files = $_FILES['attachments'];
+                
+                // Handle multiple files
+                for ($i = 0; $i < count($files['name']); $i++) {
+                    if ($files['error'][$i] !== UPLOAD_ERR_OK) {
+                        continue;
+                    }
+                    
+                    // Validate file type (PDF only)
+                    $file_ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+                    if ($file_ext !== 'pdf') {
+                        continue;
+                    }
+                    
+                    // Validate file size (max 10MB)
+                    if ($files['size'][$i] > 10 * 1024 * 1024) {
+                        continue;
+                    }
+                    
+                    // Generate unique filename
+                    $filename = 'attachment_' . $inspection_id . '_' . time() . '_' . $i . '.pdf';
+                    $file_path = $upload_dir . $filename;
+                    
+                    // Move uploaded file
+                    if (move_uploaded_file($files['tmp_name'][$i], $file_path)) {
+                        // Save to database
+                        $stmt_insert = $conn->prepare("
+                            INSERT INTO tbl_inspection_attachments 
+                            (inspection_id, filename, file_path, file_size, uploaded_by_user_id, uploaded_at)
+                            VALUES (?, ?, ?, ?, ?, NOW())
+                        ");
+                        
+                        if ($stmt_insert) {
+                            $original_filename = $files['name'][$i];
+                            $file_size = $files['size'][$i];
+                            
+                            $stmt_insert->bind_param("issii", 
+                                $inspection_id, 
+                                $original_filename, 
+                                $file_path, 
+                                $file_size, 
+                                $loggedInUserId
+                            );
+                            
+                            if ($stmt_insert->execute()) {
+                                $uploaded_files[] = [
+                                    'id' => $conn->insert_id,
+                                    'filename' => $original_filename,
+                                    'file_path' => $file_path
+                                ];
+                            }
+                            $stmt_insert->close();
+                        }
+                    }
+                }
+                
+                if (empty($uploaded_files)) {
+                    throw new Exception("فشل رفع الملفات. تأكد من أن الملفات بصيغة PDF وحجمها أقل من 10MB");
+                }
+                
+                $response_data = [
+                    'success' => true,
+                    'uploaded_files' => $uploaded_files,
+                    'message' => 'تم رفع المرفقات بنجاح',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            } catch (Exception $e) {
+                logError("Error in upload_attachment: " . $e->getMessage(), ['inspection_id' => $inspection_id]);
+                $response_data = [
+                    'success' => false,
+                    'message' => 'فشل رفع المرفقات: ' . $e->getMessage(),
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            ob_end_flush();
+            break;
+        
         default:
             logError("Invalid action received.", ['action' => $action]);
             $response_data = [

@@ -545,6 +545,70 @@ input:checked + .slider:before {
 .pdf-preview-actions .btn-secondary {
     background-color: #6c757d;
 }
+/* ✅ Confirmation Modal */
+#confirmationModal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+#confirmationModal .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 400px;
+    max-width: 90%;
+    border-radius: 8px;
+    direction: rtl;
+    text-align: center;
+}
+#confirmationModal .modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+/* ✅ Attachments List Styles */
+.attachments-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+.attachments-section h4 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+.attachment-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.attachment-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.attachment-name {
+    font-weight: bold;
+    color: #333;
+}
+.attachment-actions {
+    display: flex;
+    gap: 5px;
+}
 /* ✅ زر حفظ البنود في أسفل الصفحة */
 .bottom-save-button {
     position: fixed;
@@ -621,6 +685,10 @@ input:checked + .slider:before {
           
             <button id="searchBtn" class="search-btn">
                 <i class="fas fa-search"></i> بحث
+            </button>
+            
+            <button id="newInspectionBtn" class="btn-primary hidden" type="button">
+                <i class="fas fa-plus-circle"></i> تفتيش جديد
             </button>
         </div>
         <!-- زر تسجيل منشأة جديدة -->
@@ -872,6 +940,19 @@ input:checked + .slider:before {
                     </div>
                 </div>
             </div>
+            
+            <!-- ✅ قسم المرفقات -->
+            <div class="attachments-section">
+                <h4>المرفقات الإضافية</h4>
+                <div id="attachmentsList"></div>
+                <div class="pdf-upload-controls" style="margin-top: 15px;">
+                    <input type="file" id="newAttachmentFile" accept=".pdf" multiple>
+                    <button type="button" id="uploadAttachmentBtn" class="btn-primary">
+                        <i class="fas fa-upload"></i> رفع مرفق جديد
+                    </button>
+                </div>
+            </div>
+            
             <div class="button-group">
                 <button type="button" class="btn-primary" id="approveInspectionBtn">
                     <i class="fas fa-check-circle"></i> اعتماد التفتيش
@@ -889,6 +970,22 @@ input:checked + .slider:before {
                     <i class="fas fa-print"></i> طباعة التقرير
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Confirmation Modal -->
+<div id="confirmationModal" class="modal">
+    <div class="modal-content">
+        <h3 style="color: var(--primary-color); margin-bottom: 15px;">تأكيد الحفظ</h3>
+        <p style="font-size: 1.1em; margin-bottom: 20px;">هل أنت متأكد من حفظ بنود التفتيش؟</p>
+        <div class="modal-buttons">
+            <button type="button" id="confirmSaveBtn" class="btn-primary">
+                <i class="fas fa-check"></i> نعم، احفظ
+            </button>
+            <button type="button" id="cancelSaveBtn" class="btn-secondary">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
         </div>
     </div>
 </div>
@@ -1067,6 +1164,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsPdfNoPreview = document.getElementById('resultsPdfNoPreview');
     const resultsPdfLink = document.getElementById('resultsPdfLink');
     const toggleResultsPdfPreview = document.getElementById('toggleResultsPdfPreview');
+    
+    // ✅ New elements for confirmation and attachments
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+    const cancelSaveBtn = document.getElementById('cancelSaveBtn');
+    const newInspectionBtn = document.getElementById('newInspectionBtn');
+    const attachmentsList = document.getElementById('attachmentsList');
+    const newAttachmentFile = document.getElementById('newAttachmentFile');
+    const uploadAttachmentBtn = document.getElementById('uploadAttachmentBtn');
+    
     // Application Variables
     let currentInspectionId = null;
     let facilityUniqueId = null;
@@ -1607,10 +1714,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 inspectionSection.style.display = 'block';
                 itemsSection.style.display = 'block';
                 resultsSection.style.display = 'block';
+                
+                // ✅ Show "New Inspection" button when existing inspection is loaded
+                newInspectionBtn.classList.remove('hidden');
+                
                 // ✅ إظهار زر حفظ البنود في الأسفل
                 toggleBottomSaveButton(true);
                 // ✅ إظهار قسم PDF في وضع التعديل
                 resultsPdfPreview.style.display = 'block';
+                
+                // ✅ Load attachments for this inspection
+                await loadAttachments(inspectionId);
+                
                 // تحميل البنود والإجراءات بشكل متوازي
                 await Promise.all([
                     loadInspectionItems(true, inspectionId),
@@ -2255,13 +2370,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ✅ زر حفظ البنود في أسفل الصفحة
-saveItemsBtn.addEventListener('click', async function() {
+    // ✅ زر حفظ البنود في أسفل الصفحة مع تأكيد
+saveItemsBtn.addEventListener('click', function() {
+    if (!currentInspectionId) {
+        showMessage('لم يتم إنشاء التفتيش بعد', false);
+        return;
+    }
+    // Show confirmation modal
+    confirmationModal.style.display = 'block';
+});
+
+// ✅ Confirmation modal handlers
+confirmSaveBtn.addEventListener('click', async function() {
+    confirmationModal.style.display = 'none';
+    await performSaveInspectionItems();
+});
+
+cancelSaveBtn.addEventListener('click', function() {
+    confirmationModal.style.display = 'none';
+    showMessage('تم إلغاء عملية الحفظ', false);
+});
+
+// ✅ Function to perform the actual save
+async function performSaveInspectionItems() {
     if (!currentInspectionId) {
         showMessage('لم يتم إنشاء التفتيش بعد', false);
         return;
     }
     const itemsToSave = [];
+    const itemRows = document.querySelectorAll('.item-row');
     const itemRows = document.querySelectorAll('.item-row');
     itemRows.forEach(row => {
         const codeId = parseInt(row.querySelector('.is-violation-checkbox').dataset.codeId, 10) || 0; // parseInt
@@ -2407,7 +2544,174 @@ saveItemsBtn.addEventListener('click', async function() {
         console.error('Error:', error);
         showMessage('حدث خطأ أثناء حفظ البنود', false);
     }
-});
+}
+
+    // ✅ New Inspection button handler - clears fields for new inspection with same license
+    newInspectionBtn.addEventListener('click', function() {
+        if (!facilityUniqueId) {
+            showMessage('لا توجد منشأة محملة لبدء تفتيش جديد', false);
+            return;
+        }
+        // Clear inspection fields but keep facility data
+        inspectionDateInput.value = '<?php echo date('Y-m-d'); ?>';
+        inspectionTypeSelect.value = '';
+        campaignGroup.style.display = 'none';
+        campaignNameInput.value = '';
+        notesTextarea.value = '';
+        currentInspectionId = null;
+        itemsContainer.innerHTML = '';
+        
+        // Show inspection section and hide results
+        inspectionSection.style.display = 'block';
+        itemsSection.style.display = 'none';
+        resultsSection.style.display = 'none';
+        
+        // Hide new inspection button after clearing
+        newInspectionBtn.classList.add('hidden');
+        
+        showMessage('تم تفريغ الحقول. يمكنك الآن إنشاء تفتيش جديد', true);
+    });
+
+    // ✅ Load attachments for inspection
+    async function loadAttachments(inspectionId) {
+        if (!inspectionId) return;
+        
+        try {
+            const response = await fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=get_attachments&inspection_id=${inspectionId}`
+            });
+            const data = await response.json();
+            
+            if (data.success && data.attachments && data.attachments.length > 0) {
+                renderAttachments(data.attachments);
+            } else {
+                attachmentsList.innerHTML = '<p style="color: #666; text-align: center;">لا توجد مرفقات</p>';
+            }
+        } catch (error) {
+            console.error('Error loading attachments:', error);
+            attachmentsList.innerHTML = '<p style="color: red; text-align: center;">خطأ في تحميل المرفقات</p>';
+        }
+    }
+
+    // ✅ Render attachments list
+    function renderAttachments(attachments) {
+        if (!attachments || attachments.length === 0) {
+            attachmentsList.innerHTML = '<p style="color: #666; text-align: center;">لا توجد مرفقات</p>';
+            return;
+        }
+        
+        let html = '';
+        attachments.forEach(att => {
+            html += `
+                <div class="attachment-item" data-attachment-id="${att.id}">
+                    <div class="attachment-info">
+                        <i class="fas fa-file-pdf" style="color: #dc3545; font-size: 1.5em;"></i>
+                        <span class="attachment-name">${att.filename || 'ملف PDF'}</span>
+                    </div>
+                    <div class="attachment-actions">
+                        <button type="button" class="btn-secondary view-attachment-btn" data-path="${att.file_path}">
+                            <i class="fas fa-eye"></i> عرض
+                        </button>
+                        <button type="button" class="btn-danger delete-attachment-btn" data-id="${att.id}">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        attachmentsList.innerHTML = html;
+        
+        // Add event listeners
+        document.querySelectorAll('.view-attachment-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                window.open(this.dataset.path, '_blank');
+            });
+        });
+        
+        document.querySelectorAll('.delete-attachment-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const attachmentId = this.dataset.id;
+                await deleteAttachment(attachmentId);
+            });
+        });
+    }
+
+    // ✅ Delete attachment
+    async function deleteAttachment(attachmentId) {
+        if (!confirm('هل أنت متأكد من حذف هذا المرفق؟')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `action=delete_attachment&attachment_id=${attachmentId}`
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                showMessage('تم حذف المرفق بنجاح', true);
+                // Remove from UI
+                const attachmentItem = document.querySelector(`[data-attachment-id="${attachmentId}"]`);
+                if (attachmentItem) {
+                    attachmentItem.remove();
+                }
+                // Reload attachments
+                if (currentInspectionId) {
+                    await loadAttachments(currentInspectionId);
+                }
+            } else {
+                showMessage(data.message || 'فشل حذف المرفق', false);
+            }
+        } catch (error) {
+            console.error('Error deleting attachment:', error);
+            showMessage('حدث خطأ أثناء حذف المرفق', false);
+        }
+    }
+
+    // ✅ Upload new attachment
+    uploadAttachmentBtn.addEventListener('click', async function() {
+        if (!currentInspectionId) {
+            showMessage('الرجاء إنشاء التفتيش أولاً قبل رفع المرفقات', false);
+            return;
+        }
+        
+        const files = newAttachmentFile.files;
+        if (!files || files.length === 0) {
+            showMessage('الرجاء اختيار ملف واحد على الأقل', false);
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('action', 'upload_attachment');
+        formData.append('inspection_id', currentInspectionId);
+        
+        for (let i = 0; i < files.length; i++) {
+            formData.append('attachments[]', files[i]);
+        }
+        
+        try {
+            const response = await fetch('api.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                showMessage('تم رفع المرفق بنجاح', true);
+                newAttachmentFile.value = '';
+                await loadAttachments(currentInspectionId);
+            } else {
+                showMessage(data.message || 'فشل رفع المرفق', false);
+            }
+        } catch (error) {
+            console.error('Error uploading attachment:', error);
+            showMessage('حدث خطأ أثناء رفع المرفق', false);
+        }
+    });
 
     approveInspectionBtn.addEventListener('click', async function() {
         if (!currentInspectionId) {
