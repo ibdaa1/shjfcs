@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $isSpecificSearch = isset($_POST['isSpecificSearch']) ? (int)$_POST['isSpecificSearch'] : 0;
             $establishments = [];
             // تحديد الحقول مع التأكد من Sub_Sector وshfhsp وجميع الحقول المطلوبة
-            $selectFields = "ID, license_no, unique_id, facility_name, brand_name, area, sub_area, description, activity_type, hazard_class,
+            $selectFields = "ID, license_no, unique_id, facility_name, brand_name, area, sub_area, activity_type, hazard_class,
                              LicenseIssuing, ltype, sub_no, Building, detailed_activities, facility_status, unit, Sub_UNIT,
                              site_coordinates, Sector, Sub_Sector, shfhsp, lstart_date, lend_date, user, area_id, phone_number, email, front_image_url, entry_permit_no, created_at, updated_at";
             if (empty($searchTerm)) {
@@ -1434,7 +1434,7 @@ case 'update_inspection_date':
             }
             try {
                 // Ensure all fields are selected here as well
-                $selectFields = "ID, license_no, unique_id, facility_name, brand_name, area, sub_area, description, activity_type, hazard_class,
+                $selectFields = "ID, license_no, unique_id, facility_name, brand_name, area, sub_area, activity_type, hazard_class,
                                  LicenseIssuing, ltype, sub_no, Building, detailed_activities, facility_status, unit, Sub_UNIT,
                                  site_coordinates, Sector, Sub_Sector, shfhsp, lstart_date, lend_date, user, area_id, phone_number, email, front_image_url, entry_permit_no, created_at, updated_at";
                 $stmt = $conn->prepare("
@@ -1510,93 +1510,6 @@ case 'update_inspection_date':
             echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
             ob_end_flush();
             break;
-        
-        case 'delete_pdf':
-            $inspection_id = $_POST['inspection_id'] ?? null;
-            $pdf_path = $_POST['pdf_path'] ?? null;
-            
-            if (!$inspection_id) {
-                $response_data = [
-                    'success' => false,
-                    'message' => 'معرف التفتيش مطلوب.',
-                    'timestamp' => date('Y-m-d H:i:s')
-                ];
-                echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
-                ob_end_flush();
-                break;
-            }
-            
-            if (!$pdf_path) {
-                $response_data = [
-                    'success' => false,
-                    'message' => 'مسار الملف مطلوب.',
-                    'timestamp' => date('Y-m-d H:i:s')
-                ];
-                echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
-                ob_end_flush();
-                break;
-            }
-            
-            try {
-                // Check if user has permission to delete (inspector or admin)
-                $stmt_check = $conn->prepare("SELECT inspector_user_id FROM tbl_inspections WHERE inspection_id = ?");
-                if (!$stmt_check) {
-                    throw new Exception("Failed to prepare permission check: " . $conn->error);
-                }
-                $stmt_check->bind_param("i", $inspection_id);
-                $stmt_check->execute();
-                $result_check = $stmt_check->get_result();
-                $inspection = $result_check->fetch_assoc();
-                $stmt_check->close();
-                
-                if (!$inspection) {
-                    throw new Exception("التفتيش غير موجود.");
-                }
-                
-                $isAdmin = $_SESSION['user']['IsAdmin'] ?? 0;
-                if ($inspection['inspector_user_id'] != $loggedInUserId && $isAdmin != 1) {
-                    throw new Exception("لا تملك صلاحية حذف هذا الملف.");
-                }
-                
-                // Delete the physical file if it exists
-                if (file_exists($pdf_path)) {
-                    if (unlink($pdf_path)) {
-                        logError("Successfully deleted PDF file: " . $pdf_path, ['inspection_id' => $inspection_id]);
-                    } else {
-                        logError("Failed to delete PDF file: " . $pdf_path, ['inspection_id' => $inspection_id]);
-                    }
-                }
-                
-                // Update database to remove photo_file reference
-                $stmt_update = $conn->prepare("UPDATE tbl_inspections SET photo_file = NULL, updated_at = NOW(), updated_by_user_id = ? WHERE inspection_id = ?");
-                if (!$stmt_update) {
-                    throw new Exception("Failed to prepare update statement: " . $conn->error);
-                }
-                
-                $stmt_update->bind_param("ii", $loggedInUserId, $inspection_id);
-                if (!$stmt_update->execute()) {
-                    throw new Exception("Failed to update database: " . $stmt_update->error);
-                }
-                $stmt_update->close();
-                
-                $response_data = [
-                    'success' => true,
-                    'message' => 'تم حذف الملف بنجاح.',
-                    'timestamp' => date('Y-m-d H:i:s')
-                ];
-            } catch (Exception $e) {
-                logError("Error in delete_pdf: " . $e->getMessage(), ['inspection_id' => $inspection_id, 'pdf_path' => $pdf_path]);
-                $response_data = [
-                    'success' => false,
-                    'message' => 'فشل حذف الملف: ' . $e->getMessage(),
-                    'timestamp' => date('Y-m-d H:i:s')
-                ];
-            }
-            
-            echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
-            ob_end_flush();
-            break;
-        
         default:
             logError("Invalid action received.", ['action' => $action]);
             $response_data = [

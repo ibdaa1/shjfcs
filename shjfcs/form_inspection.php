@@ -593,34 +593,34 @@ input:checked + .slider:before {
     <!-- Message -->
     <div id="message"></div>
     <!-- 🔍 بحث السجلات السابقة برقم الرخصة -->
-    <div class="search-license-box">
-        <label for="fullLicenseSearch" style="display: block; margin-bottom: 5px;">بحث السجلات السابقة برقم الرخصة</label>
+    <div class="search-license-box" style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9;">
+        <label for="fullLicenseSearch" style="display: block; margin-bottom: 5px; font-weight: bold; color: #333;">بحث السجلات السابقة برقم الرخصة</label>
       
         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <input type="text" id="fullLicenseSearch" placeholder="أدخل رقم الرخصة الكامل" style="flex: 1; padding: 6px;">
+            <input type="text" id="fullLicenseSearch" placeholder="أدخل رقم الرخصة الكامل" style="flex: 1; padding: 8px; min-width: 200px;">
           
-            <button type="button" class="btn-primary" id="searchFullLicenseBtn">
-                <i class="fas fa-search"></i> بحث
+            <button type="button" class="btn-primary" id="searchFullLicenseBtn" style="background-color: #17a2b8;">
+                <i class="fas fa-search"></i> بحث في السجلات السابقة
             </button>
           
-            <button type="button" class="btn-secondary" id="previousFacilityBtn">
+            <button type="button" class="btn-secondary" id="previousFacilityBtn" style="display: none;">
                 <i class="fas fa-arrow-right"></i> السابق
             </button>
           
-            <button type="button" class="btn-secondary" id="nextFacilityBtn">
+            <button type="button" class="btn-secondary" id="nextFacilityBtn" style="display: none;">
                 <i class="fas fa-arrow-left"></i> التالي
             </button>
         </div>
     </div>
-    <!-- 🔍 إدخال رقم الرخصة للتسجيل -->
+    <!-- 🔍 إدخال رقم الرخصة للتفتيش الجديد -->
     <div class="form-section" id="searchSection">
-        <h3>1. إدخال رقم الرخصة للتسجيل</h3>
+        <h3>1. إدخال رقم الرخصة للتفتيش الجديد</h3>
       
         <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-            <input type="text" id="licenseNo" placeholder="أدخل رقم الرخصة أو المعرف الفريد أو اسم المنشأة" style="flex: 1; padding: 6px;">
+            <input type="text" id="licenseNo" placeholder="أدخل رقم الرخصة أو المعرف الفريد أو اسم المنشأة" style="flex: 1; padding: 8px; min-width: 250px;">
           
             <button id="searchBtn" class="search-btn">
-                <i class="fas fa-search"></i> بحث
+                <i class="fas fa-search"></i> بحث عن منشأة
             </button>
         </div>
         <!-- زر تسجيل منشأة جديدة -->
@@ -630,11 +630,11 @@ input:checked + .slider:before {
         <!-- اختيار المنشأة -->
         <div id="facilitySelection" class="form-group hidden" style="margin-top: 10px;">
             <label for="facilitySelector">اختر المنشأة:</label>
-            <select id="facilitySelector">
+            <select id="facilitySelector" style="padding: 8px; font-size: 0.9em;">
                 <option value="">-- اختر منشأة --</option>
             </select>
         </div>
-        <div id="facilityInfo">
+        <div id="facilityInfo" style="display: none;">
             <div class="form-grid">
                 <div class="form-group">
                     <label>اسم المنشأة</label>
@@ -688,7 +688,7 @@ input:checked + .slider:before {
                     <input type="text" id="establishmentEmail" readonly class="readonly">
                 </div>
             </div>
-            <div id="establishmentActionButtons" class="button-group hidden">
+            <div id="establishmentActionButtons" class="button-group hidden" style="margin-top: 10px;">
                 <button type="button" class="btn-secondary" id="editEstablishmentBtn">
                     <i class="fas fa-edit"></i> تعديل المنشأة
                 </button>
@@ -716,11 +716,11 @@ input:checked + .slider:before {
                     </select>
                 </div>
                 <div class="form-group hidden" id="campaignGroup">
-    <label>اسم الحملة</label>
-    <select id="campaignName" class="form-control">
-        <option value="">-- اختر اسم الحملة --</option>
-    </select>
-</div>
+                    <label>اسم الحملة</label>
+                    <select id="campaignName" class="form-control">
+                        <option value="">-- اختر اسم الحملة --</option>
+                    </select>
+                </div>
 
                 <div class="form-group">
                     <label>معرف المفتش</label>
@@ -729,9 +729,11 @@ input:checked + .slider:before {
             </div>
             <div class="form-group">
                 <label>ملاحظات عامة</label>
-                <textarea id="notes"></textarea>
+                <textarea id="notes" rows="3"></textarea>
             </div>
-            <button id="createInspectionBtn"><i class="fas fa-plus-circle"></i> إنشاء التفتيش</button>
+            <button id="createInspectionBtn" style="margin-top: 10px; width: 100%;">
+                <i class="fas fa-plus-circle"></i> إنشاء تفتيش جديد
+            </button>
         </div>
         <div class="form-section hidden" id="itemsSection">
             <h3>3. بنود التفتيش</h3>
@@ -740,7 +742,6 @@ input:checked + .slider:before {
                 <input type="text" id="searchItemsInput" placeholder="أدخل رقم البند للبحث...">
             </div>
             <div id="itemsContainer"></div>
-            <!-- تم نقل أزرار البنود إلى أسفل الصفحة -->
         </div>
         <!-- قسم الإجراءات المتخذة -->
         <div class="form-section hidden" id="actionsSection">
@@ -844,7 +845,7 @@ input:checked + .slider:before {
             </div>
             <div class="form-group">
                 <label>ملاحظات التفتيش</label>
-                <textarea id="resultNotes" readonly class="readonly"></textarea>
+                <textarea id="resultNotes" readonly class="readonly" rows="3"></textarea>
             </div>
             <!-- ✅ قسم PDF في نتائج التفتيش -->
             <div class="results-pdf-section">
@@ -856,9 +857,6 @@ input:checked + .slider:before {
                     </button>
                     <button type="button" id="resultsViewPdfBtn" class="btn-secondary hidden">
                         <i class="fas fa-eye"></i> عرض PDF
-                    </button>
-                    <button type="button" id="resultsDeletePdfBtn" class="btn-danger hidden">
-                        <i class="fas fa-trash"></i> حذف PDF
                     </button>
                 </div>
                 <div id="resultsPdfPreview" class="pdf-preview-container hidden">
@@ -875,7 +873,7 @@ input:checked + .slider:before {
                     </div>
                 </div>
             </div>
-            <div class="button-group">
+            <div class="button-group" style="margin-top: 20px;">
                 <button type="button" class="btn-primary" id="approveInspectionBtn">
                     <i class="fas fa-check-circle"></i> اعتماد التفتيش
                 </button>
@@ -925,7 +923,7 @@ input:checked + .slider:before {
                     <option value="اعادة_فتح">اعادة_فتح</option>
                     <option value="اتلاف">اتلاف</option>
                     <option value="مغلق">مغلق</option>
-                    <option value="تقرير">تقرير</option
+                    <option value="تقرير">تقرير</option>
                 </select>
             </div>
             <div class="form-group">
@@ -964,6 +962,7 @@ input:checked + .slider:before {
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // جلب أسماء الحملات
     fetch('get_dropdowns.php')
         .then(response => response.json())
         .then(data => {
@@ -978,18 +977,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => console.error('خطأ في جلب أسماء الحملات:', error));
-});
-document.addEventListener('DOMContentLoaded', function() {
+
     // Elements
     const messageDiv = document.getElementById('message');
     const searchSection = document.getElementById('searchSection');
     const inspectionSection = document.getElementById('inspectionSection');
     const itemsSection = document.getElementById('itemsSection');
     const resultsSection = document.getElementById('resultsSection');
+    const actionsSection = document.getElementById('actionsSection');
     const licenseNoInput = document.getElementById('licenseNo');
     const searchBtn = document.getElementById('searchBtn');
-    const previousInspectionBtn = document.getElementById('previousFacilityBtn');
-    const nextInspectionBtn = document.getElementById('nextFacilityBtn');
+    const previousFacilityBtn = document.getElementById('previousFacilityBtn');
+    const nextFacilityBtn = document.getElementById('nextFacilityBtn');
     const registerEstablishmentBtn = document.getElementById('registerEstablishmentBtn');
     const facilityInfoDiv = document.getElementById('facilityInfo');
     const facilityNameInput = document.getElementById('facilityName');
@@ -1017,9 +1016,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const createInspectionBtn = document.getElementById('createInspectionBtn');
     const itemsContainer = document.getElementById('itemsContainer');
     const searchItemsInput = document.getElementById('searchItemsInput');
-    const saveItemsBtn = document.getElementById('saveItemsBtn'); // ✅ زر حفظ البنود في الأسفل
-    const newInspectionBtn = document.getElementById('newInspectionBtn');
-    const deleteInspectionBtn = document.getElementById('deleteInspectionBtn');
+    const saveItemsBtn = document.getElementById('saveItemsBtn');
     const resultInspectionId = document.getElementById('resultInspectionId');
     const resultDate = document.getElementById('resultDate');
     const resultType = document.getElementById('resultType');
@@ -1061,32 +1058,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModal = document.getElementById('closeModal');
     const facilitySelectionDiv = document.getElementById('facilitySelection');
     const facilitySelector = document.getElementById('facilitySelector');
-    // ✅ PDF في النتائج
+    const fullLicenseSearchInput = document.getElementById('fullLicenseSearch');
+    const searchFullLicenseBtn = document.getElementById('searchFullLicenseBtn');
+    
+    // PDF elements
     const resultsInspectionPdfFileInput = document.getElementById('resultsInspectionPdfFile');
     const resultsUploadPdfBtn = document.getElementById('resultsUploadPdfBtn');
     const resultsViewPdfBtn = document.getElementById('resultsViewPdfBtn');
-    const resultsDeletePdfBtn = document.getElementById('resultsDeletePdfBtn');
     const resultsPdfPreview = document.getElementById('resultsPdfPreview');
     const resultsPdfEmbed = document.getElementById('resultsPdfEmbed');
     const resultsPdfNoPreview = document.getElementById('resultsPdfNoPreview');
     const resultsPdfLink = document.getElementById('resultsPdfLink');
     const toggleResultsPdfPreview = document.getElementById('toggleResultsPdfPreview');
+    
     // Application Variables
     let currentInspectionId = null;
     let facilityUniqueId = null;
     let inspectionCodes = [];
     let allUserInspections = [];
     let currentInspectionIndex = -1;
-    let isSpecificSearch = true;
-    let searchResults = [];
-    let currentResultIndex = 0;
     let allFoundFacilities = [];
-    let currentFacilityIndex = 0;
     let inspectionRecords = [];
     let currentInspectionRecordIndex = 0;
     let currentPdfPath = '';
     const loggedInUserId = '<?php echo htmlspecialchars($loggedInUserId); ?>';
     const loggedInUserName = '<?php echo htmlspecialchars($loggedInUserName); ?>';
+    let isNewInspectionMode = true;
     
     // ✅ التحكم في ظهور زر حفظ البنود في الأسفل
     function toggleBottomSaveButton(show) {
@@ -1103,11 +1100,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         
         if (scrollTop > lastScrollTop) {
-            // التمرير لأسفل - إظهار الزر
             saveItemsBtn.style.opacity = '1';
             saveItemsBtn.style.transform = 'translateX(-50%) translateY(0)';
         } else {
-            // التمرير لأعلى - إخفاء الزر
             saveItemsBtn.style.opacity = '0';
             saveItemsBtn.style.transform = 'translateX(-50%) translateY(100px)';
         }
@@ -1123,18 +1118,46 @@ document.addEventListener('DOMContentLoaded', function() {
         inspectorIdInput.value = loggedInUserId;
     }
 
+    // ✅ دالة لتعيين وضع التفتيش الجديد
+    function setNewInspectionMode() {
+        isNewInspectionMode = true;
+        // إخفاء أقسام البنود والنتائج والإجراءات
+        itemsSection.style.display = 'none';
+        resultsSection.style.display = 'none';
+        actionsSection.style.display = 'none';
+        // إظهار قسم إنشاء التفتيش فقط
+        inspectionSection.style.display = 'block';
+        // إخفاء أزرار التنقل للتفتيشات القديمة
+        previousFacilityBtn.style.display = 'none';
+        nextFacilityBtn.style.display = 'none';
+        // إعادة تعيين معرف التفتيش الحالي
+        currentInspectionId = null;
+        // إخفاء زر حفظ البنود
+        toggleBottomSaveButton(false);
+    }
+
+    // ✅ دالة لتعيين وضع عرض التفتيش القديم
+    function setOldInspectionMode() {
+        isNewInspectionMode = false;
+        // إظهار جميع الأقسام
+        inspectionSection.style.display = 'block';
+        itemsSection.style.display = 'block';
+        resultsSection.style.display = 'block';
+        actionsSection.style.display = 'block';
+        // إظهار زر حفظ البنود
+        toggleBottomSaveButton(true);
+    }
+
     facilitySelector.addEventListener('change', async function() {
         const selectedUniqueId = this.value;
         if (!selectedUniqueId) return;
         const selectedFacility = allFoundFacilities.find(f => f.unique_id === selectedUniqueId);
         if (selectedFacility) {
             await populateFacilityFields(selectedFacility);
-            await loadInspectionsForFacility(selectedFacility.unique_id);
+            // عند اختيار منشأة من القائمة، نكون في وضع التفتيش الجديد
+            setNewInspectionMode();
             facilitySelectionDiv.style.display = 'none';
             facilityInfoDiv.style.display = 'block';
-            inspectionSection.style.display = 'block';
-            itemsSection.style.display = 'none';
-            resultsSection.style.display = 'none';
             establishmentActionButtons.style.display = 'flex';
             editEstablishmentBtn.dataset.uniqueId = selectedFacility.unique_id;
             evaluateEstablishmentBtn.dataset.uniqueId = selectedFacility.unique_id;
@@ -1159,6 +1182,8 @@ document.addEventListener('DOMContentLoaded', function() {
         inspectionSection.style.display = 'none';
         itemsSection.style.display = 'none';
         resultsSection.style.display = 'none';
+        actionsSection.style.display = 'none';
+        facilitySelectionDiv.style.display = 'none';
         facilityNameInput.value = '';
         licenseNumberDisplay.value = '';
         areaInput.value = '';
@@ -1204,8 +1229,8 @@ document.addEventListener('DOMContentLoaded', function() {
         approvalDateInput.value = '';
         updatedByInput.value = '';
         messageDiv.style.display = 'none';
-        previousInspectionBtn.style.display = 'none';
-        nextInspectionBtn.style.display = 'none';
+        previousFacilityBtn.style.display = 'none';
+        nextFacilityBtn.style.display = 'none';
         actionsList.innerHTML = '';
         inspectionRecords = [];
         currentInspectionRecordIndex = 0;
@@ -1217,11 +1242,11 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsViewPdfBtn.classList.add('hidden');
         resultsInspectionPdfFileInput.value = '';
         
-        // ✅ إخفاء زر حفظ البنود في الأسفل
         toggleBottomSaveButton(false);
+        isNewInspectionMode = true;
     }
 
-    // ✅ دالة لتحديث معاينة PDF المرفوع فقط مع رابط
+    // ✅ دالة لتحديث معاينة PDF المرفوع
     function updatePdfPreview(pdfPath) {
         if (pdfPath && pdfPath.trim() !== '') {
             let correctedPath = pdfPath;
@@ -1237,7 +1262,6 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsPdfNoPreview.style.display = 'none';
             resultsPdfPreview.classList.remove('hidden');
             resultsViewPdfBtn.classList.remove('hidden');
-            resultsDeletePdfBtn.classList.remove('hidden');
           
             currentPdfPath = correctedPath;
         } else {
@@ -1246,7 +1270,6 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsPdfLink.classList.add('hidden');
             resultsPdfPreview.classList.add('hidden');
             resultsViewPdfBtn.classList.add('hidden');
-            resultsDeletePdfBtn.classList.add('hidden');
         }
     }
 
@@ -1313,72 +1336,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ✅ PDF Delete Handler
-    resultsDeletePdfBtn.addEventListener('click', async () => {
-        if (!currentInspectionId) {
-            showMessage('لم يتم العثور على معرف التفتيش.', false);
-            return;
-        }
+    // ✅ دالة البحث عن منشأة لإنشاء تفتيش جديد
+    async function searchForNewInspection(searchTerm) {
+        console.log('البحث عن منشأة جديدة:', searchTerm);
         
-        if (!currentPdfPath) {
-            showMessage('لا يوجد ملف PDF لحذفه.', false);
-            return;
-        }
-        
-        if (!confirm('هل أنت متأكد من حذف ملف PDF؟ لن تتمكن من استعادته.')) {
-            return;
-        }
-        
-        try {
-            const formData = new FormData();
-            formData.append('action', 'delete_pdf');
-            formData.append('inspection_id', currentInspectionId);
-            formData.append('pdf_path', currentPdfPath);
-            
-            const response = await fetch('api.php', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                currentPdfPath = '';
-                updatePdfPreview('');
-                showMessage('تم حذف الملف بنجاح! يمكنك الآن رفع ملف جديد.', true);
-            } else {
-                showMessage(result.message || 'فشل حذف الملف.', false);
-            }
-        } catch (error) {
-            console.error('Error deleting PDF:', error);
-            showMessage('حدث خطأ أثناء حذف الملف.', false);
-        }
-    });
-
-    async function searchAndLoadInspection(searchTerm, isSpecificSearch = true) {
-        if (!searchTerm && isSpecificSearch) {
+        if (!searchTerm) {
             showMessage('الرجاء إدخال رقم الرخصة أو المعرف الفريد أو اسم المنشأة.', false);
-            resetFormVisibility();
             return;
         }
+        
         try {
             const formData = new FormData();
             formData.append('action', 'search_establishments');
-            formData.append('searchTerm', searchTerm || '');
-            formData.append('isSpecificSearch', isSpecificSearch ? '1' : '0');
+            formData.append('searchTerm', searchTerm);
+            formData.append('isSpecificSearch', '1');
+            
             const response = await fetch('api.php', {
                 method: 'POST',
                 body: formData
             });
+            
             const data = await response.json();
+            console.log('نتائج البحث عن منشأة:', data);
+            
             if (data.success && data.data && data.data.length > 0) {
                 allFoundFacilities = data.data;
+                
                 if (allFoundFacilities.length > 1) {
+                    // إذا كان هناك أكثر من منشأة، نعرض القائمة للاختيار
                     facilitySelector.innerHTML = '<option value="">-- اختر منشأة --</option>';
                     allFoundFacilities.forEach(facility => {
                         const option = document.createElement('option');
                         option.value = facility.unique_id;
-                        option.textContent = `${facility.facility_name} (رخصة: ${facility.license_no} - المنطقة: ${facility.area} - المعرف: ${facility.unique_id})`;
+                        option.textContent = `${facility.facility_name} (رخصة: ${facility.license_no} - المنطقة: ${facility.area})`;
                         facilitySelector.appendChild(option);
                     });
                     facilitySelectionDiv.style.display = 'block';
@@ -1386,65 +1376,52 @@ document.addEventListener('DOMContentLoaded', function() {
                     inspectionSection.style.display = 'none';
                     itemsSection.style.display = 'none';
                     resultsSection.style.display = 'none';
+                    actionsSection.style.display = 'none';
                     establishmentActionButtons.style.display = 'none';
                     registerEstablishmentBtn.style.display = 'none';
                     showMessage('تم العثور على عدة منشآت، يرجى الاختيار', true);
-                    facilityNameInput.value = '';
-                    areaInput.value = '';
-                    activityTypeInput.value = '';
-                    uniqueIdInput.value = '';
-                    facilityUniqueId = null;
                 } else {
+                    // إذا كان هناك منشأة واحدة فقط
                     const facility = allFoundFacilities[0];
                     await populateFacilityFields(facility);
+                    
                     facilitySelectionDiv.style.display = 'none';
                     facilityInfoDiv.style.display = 'block';
-                    await loadInspectionsForFacility(facility.unique_id);
-                    inspectionSection.style.display = 'block';
-                    itemsSection.style.display = 'none';
-                    resultsSection.style.display = 'none';
+                    
+                    // ✅ ضبط وضع التفتيش الجديد
+                    setNewInspectionMode();
+                    
                     establishmentActionButtons.style.display = 'flex';
                     editEstablishmentBtn.dataset.uniqueId = facility.unique_id;
                     evaluateEstablishmentBtn.dataset.uniqueId = facility.unique_id;
                     registerEstablishmentBtn.style.display = 'none';
-                    showMessage('تم العثور على المنشأة بنجاح', true);
+                    
+                    showMessage('تم العثور على المنشأة بنجاح. يمكنك الآن إنشاء تفتيش جديد.', true);
                 }
             } else {
                 showMessage('رقم الرخصة/المعرف الفريد غير موجود. هل ترغب بتسجيل منشأة جديدة؟', false);
                 resetFormVisibility();
                 registerEstablishmentBtn.style.display = 'block';
-                searchSection.style.display = 'block';
+                registerEstablishmentBtn.classList.remove('hidden');
             }
         } catch (error) {
             console.error('Error:', error);
             showMessage('حدث خطأ أثناء البحث', false);
             resetFormVisibility();
             registerEstablishmentBtn.style.display = 'block';
-            searchSection.style.display = 'block';
+            registerEstablishmentBtn.classList.remove('hidden');
         }
     }
 
-    async function loadFacility(facility) {
-        await populateFacilityFields(facility);
-        facilitySelectionDiv.style.display = 'none';
-        facilityInfoDiv.style.display = 'block';
-        await loadInspectionsForFacility(facility.unique_id);
-        inspectionSection.style.display = 'block';
-        itemsSection.style.display = 'none';
-        resultsSection.style.display = 'none';
-        establishmentActionButtons.style.display = 'flex';
-        editEstablishmentBtn.dataset.uniqueId = facility.unique_id;
-        evaluateEstablishmentBtn.dataset.uniqueId = facility.unique_id;
-        showMessage('تم تحميل المنشأة بنجاح', true);
-    }
-
-    // دالة البحث برقم الرخصة لجلب سجلات التفتيش
-    document.getElementById('searchFullLicenseBtn').addEventListener('click', async () => {
-        const licenseNo = document.getElementById('fullLicenseSearch').value.trim();
+    // ✅ دالة البحث عن السجلات السابقة
+    async function searchPreviousInspections(licenseNo) {
+        console.log('البحث عن سجلات سابقة:', licenseNo);
+        
         if (!licenseNo) {
             showMessage('يرجى إدخال رقم الرخصة.', false);
             return;
         }
+        
         try {
             const response = await fetch('api.php', {
                 method: 'POST',
@@ -1454,29 +1431,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: `action=search_inspections_by_license&license_no=${encodeURIComponent(licenseNo)}`
             });
+            
             if (!response.ok) {
                 throw new Error(`خطأ في الشبكة: ${response.status}`);
             }
+            
             const data = await response.json();
+            console.log('نتائج البحث عن السجلات السابقة:', data);
+            
             if (data.success && data.data && data.data.length > 0) {
                 inspectionRecords = data.data;
                 currentInspectionRecordIndex = 0;
+                
+                // عرض أول سجل تفتيش
                 await displayInspectionRecord(inspectionRecords[currentInspectionRecordIndex]);
+                
+                // تحديث أزرار التنقل
+                updateNavigationButtons();
+                
+                showMessage(`تم العثور على ${inspectionRecords.length} سجل تفتيش`, true);
             } else {
                 showMessage('لا توجد سجلات تفتيش لهذه الرخصة', false);
+                inspectionRecords = [];
+                currentInspectionRecordIndex = 0;
+                updateNavigationButtons();
             }
         } catch (error) {
             console.error('Error:', error);
             showMessage('حدث خطأ أثناء جلب البيانات', false);
         }
-    });
+    }
 
     async function displayInspectionRecord(record) {
-        console.log('displayInspectionRecord called with:', record);
+        console.log('عرض سجل التفتيش:', record);
+        
         try {
             if (!record || !record.facility_unique_id) {
                 throw new Error('سجل التفتيش غير صالح أو لا يحتوي على معرف المنشأة');
             }
+            
+            // جلب بيانات المنشأة أولاً
             const facilityResponse = await fetch('api.php', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -1485,60 +1479,58 @@ document.addEventListener('DOMContentLoaded', function() {
                     facility_unique_id: record.facility_unique_id
                 })
             });
-            if (!facilityResponse.ok) throw new Error(`خطأ في الشبكة: ${facilityResponse.status}`);
-            const facilityData = await facilityResponse.json();
-            if (!facilityData.success) throw new Error(facilityData.message || 'فشل جلب بيانات المنشأة');
-            if (!facilityData.data) throw new Error('بيانات المنشأة فارغة');
-            await populateFacilityFields(facilityData.data);
-            if (!record.inspection_id) throw new Error('سجل التفتيش لا يحتوي على معرف التفتيش');
-            currentInspectionId = record.inspection_id;
-            await displayInspection(record.inspection_id);
-            // إظهار الأقسام
-            inspectionSection.style.display = 'block';
-            itemsSection.style.display = 'block';
-            resultsSection.style.display = 'block';
-            // ✅ إظهار زر حفظ البنود في الأسفل
-            toggleBottomSaveButton(true);
-            // تحديث أزرار التنقل
-            const prevBtn = document.getElementById('previousFacilityBtn');
-            const nextBtn = document.getElementById('nextFacilityBtn');
-            if (prevBtn && nextBtn) {
-                prevBtn.style.display = 'inline-block';
-                nextBtn.style.display = 'inline-block';
-                updateNavigationButtons();
+            
+            if (!facilityResponse.ok) {
+                throw new Error(`خطأ في الشبكة: ${facilityResponse.status}`);
             }
+            
+            const facilityData = await facilityResponse.json();
+            
+            if (!facilityData.success) {
+                throw new Error(facilityData.message || 'فشل جلب بيانات المنشأة');
+            }
+            
+            if (!facilityData.data) {
+                throw new Error('بيانات المنشأة فارغة');
+            }
+            
+            // تعبئة بيانات المنشأة
+            await populateFacilityFields(facilityData.data);
+            
+            if (!record.inspection_id) {
+                throw new Error('سجل التفتيش لا يحتوي على معرف التفتيش');
+            }
+            
+            currentInspectionId = record.inspection_id;
+            
+            // ✅ ضبط وضع التفتيش القديم
+            setOldInspectionMode();
+            
+            // تحميل بيانات التفتيش
+            await displayInspection(record.inspection_id);
+            
+            // تحديث أزرار التنقل
+            updateNavigationButtons();
+            
         } catch (error) {
             console.error('Error displaying record:', error);
             showMessage(`حدث خطأ أثناء عرض بيانات السجل: ${error.message}`, false);
         }
     }
 
-    // معالجات أحداث أزرار التنقل بين السجلات
-    document.getElementById('previousFacilityBtn').addEventListener('click', async function() {
-        if (currentInspectionRecordIndex > 0) {
-            currentInspectionRecordIndex--;
-            await displayInspectionRecord(inspectionRecords[currentInspectionRecordIndex]);
-            updateNavigationButtons();
-        }
-    });
-
-    document.getElementById('nextFacilityBtn').addEventListener('click', async function() {
-        if (currentInspectionRecordIndex < inspectionRecords.length - 1) {
-            currentInspectionRecordIndex++;
-            await displayInspectionRecord(inspectionRecords[currentInspectionRecordIndex]);
-            updateNavigationButtons();
-        }
-    });
-
+    // ✅ تحديث أزرار التنقل بين السجلات
     function updateNavigationButtons() {
         const prevBtn = document.getElementById('previousFacilityBtn');
         const nextBtn = document.getElementById('nextFacilityBtn');
+        
         if (!prevBtn || !nextBtn) return;
+        
         if (!inspectionRecords || inspectionRecords.length <= 1) {
             prevBtn.style.display = 'none';
             nextBtn.style.display = 'none';
             return;
         }
+        
         prevBtn.style.display = 'inline-block';
         nextBtn.style.display = 'inline-block';
         prevBtn.disabled = currentInspectionRecordIndex <= 0;
@@ -1559,18 +1551,18 @@ document.addEventListener('DOMContentLoaded', function() {
         lastInspectionDateInput.value = facility.last_inspection_date || '';
         lastEvaluationDateInput.value = facility.last_evaluation_date || '';
         establishmentEmailInput.value = facility.email || '';
+        
         facilityInfoDiv.style.display = 'block';
-        inspectionSection.style.display = 'block';
-        resultsSection.style.display = 'block';
-        itemsSection.style.display = 'block';
         establishmentActionButtons.style.display = 'flex';
-        // التحقق من تاريخ آخر تقييم وإظهار زر التقييم إذا غير موجود
+        
+        // التحقق من تاريخ آخر تقييم
         if (!facility.last_evaluation_date || facility.last_evaluation_date === '') {
             evaluationBtn.style.display = 'block';
         } else {
             evaluationBtn.style.display = 'none';
         }
-        // ✅ إعادة تعيين معرف المفتش من الجلسة عند تحميل المنشأة
+        
+        // ✅ إعادة تعيين معرف المفتش من الجلسة
         inspectorIdInput.value = loggedInUserId;
     }
 
@@ -1580,23 +1572,26 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('action', 'get_facility_inspections');
             formData.append('facility_unique_id', uniqueId);
             formData.append('inspector_user_id', loggedInUserId);
+            
             const response = await fetch('api.php', {
                 method: 'POST',
                 body: formData
             });
+            
             const data = await response.json();
+            console.log('Facility inspections:', data);
+            
             if (data.success && data.data && data.data.length > 0) {
                 allUserInspections = data.data.sort((a, b) => new Date(b.inspection_date) - new Date(a.inspection_date));
                 currentInspectionIndex = 0;
-                displayInspection(allUserInspections[currentInspectionIndex].inspection_id);
-                previousInspectionBtn.style.display = 'block';
-                nextInspectionBtn.style.display = 'block';
+                
+                // عرض آخر تفتيش
+                await displayInspection(allUserInspections[currentInspectionIndex].inspection_id);
+                
             } else {
                 allUserInspections = [];
                 currentInspectionIndex = -1;
                 showMessage('لا توجد تفتيشات سابقة لهذه المنشأة.', true);
-                previousInspectionBtn.style.display = 'none';
-                nextInspectionBtn.style.display = 'none';
             }
         } catch (error) {
             console.error('Error loading inspections for facility:', error);
@@ -1607,31 +1602,38 @@ document.addEventListener('DOMContentLoaded', function() {
     async function displayInspection(inspectionId) {
         try {
             itemsContainer.innerHTML = '<p>جارٍ تحميل بيانات التفتيش...</p>';
+            
             const formData = new FormData();
             formData.append('action', 'get_inspection_details');
             formData.append('inspection_id', inspectionId);
             formData.append('inspector_user_id', loggedInUserId);
             formData.append('load_items', '1');
+            
             const response = await fetch('api.php', {
                 method: 'POST',
                 body: formData
             });
+            
             const data = await response.json();
             console.log('Inspection data:', data);
+            
             if (data.success && data.inspection) {
                 const inspection = data.inspection;
                 currentInspectionId = inspection.inspection_id;
-                // تعبئة بيانات النموذج الأساسية
+                
+                // تعبئة بيانات النموذج
                 inspectionDateInput.value = inspection.inspection_date || '';
                 inspectionTypeSelect.value = inspection.inspection_type || '';
                 campaignGroup.style.display = inspection.inspection_type === 'حملة' ? 'block' : 'none';
                 campaignNameInput.value = inspection.inspection_type === 'حملة' ? (inspection.campaign_name || '') : '';
                 inspectorIdInput.value = inspection.inspector_user_id || loggedInUserId;
                 notesTextarea.value = inspection.notes || '';
-                // ✅ تعبئة مسار PDF إذا كان موجوداً وتحديث المعاينة
+                
+                // ✅ تعبئة مسار PDF
                 currentPdfPath = inspection.photo_file || '';
                 updatePdfPreview(currentPdfPath);
-                // تعبئة قسم النتائج بدقة
+                
+                // تعبئة قسم النتائج
                 resultInspectionId.textContent = inspection.inspection_id || '';
                 resultDate.textContent = inspection.inspection_date || '';
                 resultType.textContent = inspection.inspection_type || '';
@@ -1651,25 +1653,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 approvedByInput.value = inspection.approved_by_username || '';
                 approvalDateInput.value = inspection.approval_date || '';
                 updatedByInput.value = inspection.updated_by_username || '';
-                // إظهار الأقسام كاملة فور تحميل البيانات
-                inspectionSection.style.display = 'block';
-                itemsSection.style.display = 'block';
-                resultsSection.style.display = 'block';
-                // ✅ إظهار زر حفظ البنود في الأسفل
-                toggleBottomSaveButton(true);
-                // ✅ إظهار قسم PDF في وضع التعديل
-                resultsPdfPreview.style.display = 'block';
-                // تحميل البنود والإجراءات بشكل متوازي
+                
+                // تحميل البنود والإجراءات
                 await Promise.all([
                     loadInspectionItems(true, inspectionId),
                     loadInspectionActions(inspectionId)
                 ]);
+                
                 showMessage('تم تحميل بيانات التفتيش بنجاح', true);
-                // تحديث أزرار التنقل بناءً على المؤشر الحالي في المصفوفة
-                if (allUserInspections.length > 0) {
-                    previousInspectionBtn.disabled = (currentInspectionIndex <= 0);
-                    nextInspectionBtn.disabled = (currentInspectionIndex >= allUserInspections.length - 1);
-                }
+                
             } else {
                 showMessage(data.message || 'فشل جلب بيانات التفتيش', false);
                 resetFormVisibility();
@@ -1829,23 +1821,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    searchBtn.addEventListener('click', () => searchAndLoadInspection(licenseNoInput.value.trim()));
-    previousInspectionBtn.addEventListener('click', () => {
-        if (currentInspectionIndex < allUserInspections.length - 1) {
-            currentInspectionIndex++;
-            displayInspection(allUserInspections[currentInspectionIndex].inspection_id);
+    // معالجات أحداث أزرار التنقل بين السجلات
+    previousFacilityBtn.addEventListener('click', async function() {
+        if (currentInspectionRecordIndex > 0) {
+            currentInspectionRecordIndex--;
+            await displayInspectionRecord(inspectionRecords[currentInspectionRecordIndex]);
+            updateNavigationButtons();
         }
     });
-    nextInspectionBtn.addEventListener('click', () => {
-        if (currentInspectionIndex > 0) {
-            currentInspectionIndex--;
-            displayInspection(allUserInspections[currentInspectionIndex].inspection_id);
+
+    nextFacilityBtn.addEventListener('click', async function() {
+        if (currentInspectionRecordIndex < inspectionRecords.length - 1) {
+            currentInspectionRecordIndex++;
+            await displayInspectionRecord(inspectionRecords[currentInspectionRecordIndex]);
+            updateNavigationButtons();
         }
     });
+
+    // ✅ البحث عن منشأة لإنشاء تفتيش جديد
+    searchBtn.addEventListener('click', () => {
+        const searchTerm = licenseNoInput.value.trim();
+        searchForNewInspection(searchTerm);
+    });
+
+    // ✅ البحث عن السجلات السابقة
+    searchFullLicenseBtn.addEventListener('click', () => {
+        const licenseNo = fullLicenseSearchInput.value.trim();
+        searchPreviousInspections(licenseNo);
+    });
+
     registerEstablishmentBtn.addEventListener('click', () => {
         const licenseNo = licenseNoInput.value.trim();
         window.location.href = `form_est.php?license_no=${encodeURIComponent(licenseNo)}`;
     });
+
     editEstablishmentBtn.addEventListener('click', () => {
         const uniqueId = uniqueIdInput.value;
         if (uniqueId) {
@@ -1854,6 +1863,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showMessage('لا يمكن تعديل المنشأة، المعرف الفريد غير موجود.', false);
         }
     });
+
     evaluateEstablishmentBtn.addEventListener('click', () => {
         const uniqueId = uniqueIdInput.value;
         if (uniqueId) {
@@ -1862,6 +1872,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showMessage('لا يمكن تقييم المنشأة، المعرف الفريد غير موجود.', false);
         }
     });
+
     evaluationBtn.addEventListener('click', () => {
         const uniqueId = uniqueIdInput.value;
         if (uniqueId) {
@@ -1870,6 +1881,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showMessage('لا يمكن تقييم المنشأة، المعرف الفريد غير موجود.', false);
         }
     });
+
     inspectionTypeSelect.addEventListener('change', function() {
         if (this.value === 'حملة') {
             campaignGroup.style.display = 'block';
@@ -1878,6 +1890,7 @@ document.addEventListener('DOMContentLoaded', function() {
             campaignNameInput.value = '';
         }
     });
+
     createInspectionBtn.addEventListener('click', async function() {
         if (!facilityUniqueId) {
             showMessage('الرجاء البحث عن منشأة أولاً وتحديدها', false);
@@ -1887,6 +1900,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showMessage('الرجاء تعبئة جميع الحقول المطلوبة', false);
             return;
         }
+        
         // ✅ تحقق إضافي من معرف المفتش
         const inspectorId = inspectorIdInput.value.trim();
         if (!inspectorId || inspectorId === '0' || inspectorId === '') {
@@ -1894,7 +1908,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('معرف المفتش غير صالح:', inspectorId);
             return;
         }
+        
         console.log('إرسال معرف المفتش:', inspectorId);
+        
         try {
             const formData = new FormData();
             formData.append('action', 'create_inspection');
@@ -1903,29 +1919,33 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('inspection_type', inspectionTypeSelect.value);
             formData.append('inspector_user_id', inspectorId);
             formData.append('photo_file', currentPdfPath);
+            
             if (inspectionTypeSelect.value === 'حملة' && campaignNameInput.value) {
                 formData.append('campaign_name', campaignNameInput.value);
             }
+            
             if (notesTextarea.value) {
                 formData.append('notes', notesTextarea.value);
             }
+            
             const response = await fetch('api.php', {
                 method: 'POST',
                 body: formData
             });
+            
             const data = await response.json();
             console.log('استجابة إنشاء التفتيش:', data);
+            
             if (data.success) {
                 currentInspectionId = data.inspection_id;
                 resultInspectionId.textContent = currentInspectionId;
                 resultDate.textContent = inspectionDateInput.value;
                 resultType.textContent = inspectionTypeSelect.value;
                 resultNotes.value = notesTextarea.value;
-                inspectionSection.style.display = 'none';
-                itemsSection.style.display = 'block';
-                resultsSection.style.display = 'none';
-                // ✅ إظهار زر حفظ البنود في الأسفل
-                toggleBottomSaveButton(true);
+                
+                // ✅ تحويل إلى وضع عرض التفتيش بعد الإنشاء
+                setOldInspectionMode();
+                
                 await loadInspectionItems(false, null);
                 showMessage('تم إنشاء التفتيش بنجاح', true);
             } else {
@@ -2304,158 +2324,151 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ✅ زر حفظ البنود في أسفل الصفحة
-saveItemsBtn.addEventListener('click', async function() {
-    if (!currentInspectionId) {
-        showMessage('لم يتم إنشاء التفتيش بعد', false);
-        return;
-    }
-    const itemsToSave = [];
-    const itemRows = document.querySelectorAll('.item-row');
-    itemRows.forEach(row => {
-        const codeId = parseInt(row.querySelector('.is-violation-checkbox').dataset.codeId, 10) || 0; // parseInt
-        const isViolationCheckbox = row.querySelector('.is-violation-checkbox');
-        const isViolation = !!isViolationCheckbox.checked;
-        let actionTaken = 'لا يوجد إجراء';
-        let conditionLevel = 'N/A';
-        let deductedPoints = 0.00;
-        let violationValue = null;
-        let inspectorNotes = '';
-        let inspectionPhotoPath = '';
-        const actionSelect = row.querySelector('.action-select');
-        if (actionSelect) {
-            actionTaken = actionSelect.value || 'لا يوجد إجراء';
+    saveItemsBtn.addEventListener('click', async function() {
+        if (!currentInspectionId) {
+            showMessage('لم يتم إنشاء التفتيش بعد', false);
+            return;
         }
-        const pointsInput = row.querySelector('.points-input');
-        if (pointsInput) {
-            deductedPoints = parseFloat(pointsInput.value) || 0.00;
-            const conditionLevelDisplay = row.querySelector('.condition-level-display');
-            if (conditionLevelDisplay) {
-                conditionLevel = conditionLevelDisplay.value || 'N/A';
-            } else if (pointsInput.dataset.conditionLevel) {
-                conditionLevel = pointsInput.dataset.conditionLevel;
+        const itemsToSave = [];
+        const itemRows = document.querySelectorAll('.item-row');
+        itemRows.forEach(row => {
+            const codeId = parseInt(row.querySelector('.is-violation-checkbox').dataset.codeId, 10) || 0;
+            const isViolationCheckbox = row.querySelector('.is-violation-checkbox');
+            const isViolation = !!isViolationCheckbox.checked;
+            let actionTaken = 'لا يوجد إجراء';
+            let conditionLevel = 'N/A';
+            let deductedPoints = 0.00;
+            let violationValue = null;
+            let inspectorNotes = '';
+            let inspectionPhotoPath = '';
+            const actionSelect = row.querySelector('.action-select');
+            if (actionSelect) {
+                actionTaken = actionSelect.value || 'لا يوجد إجراء';
             }
-        }
-        const violationValueInput = row.querySelector('.violation-value-input');
-        if (violationValueInput) {
-            violationValue = (actionTaken === 'مخالفة') ? (parseFloat(violationValueInput.value) || 0) : null;
-        }
-        const notesInput = row.querySelector('.notes-input');
-        if (notesInput) {
-            inspectorNotes = notesInput.value || '';
-        }
-        const photoPreviewContainer = row.querySelector('.photo-preview-container');
-        if (photoPreviewContainer) {
-            inspectionPhotoPath = (photoPreviewContainer.dataset.imagePath || '').trim();
-            if (!inspectionPhotoPath) {
-                const imgElement = photoPreviewContainer.querySelector('img');
-                if (imgElement && imgElement.src && !imgElement.src.includes('placeholder.png') && imgElement.src.trim() !== '') {
-                    try {
-                        inspectionPhotoPath = new URL(imgElement.src).pathname;
-                    } catch (e) {
-                        inspectionPhotoPath = imgElement.src; // fallback
+            const pointsInput = row.querySelector('.points-input');
+            if (pointsInput) {
+                deductedPoints = parseFloat(pointsInput.value) || 0.00;
+                const conditionLevelDisplay = row.querySelector('.condition-level-display');
+                if (conditionLevelDisplay) {
+                    conditionLevel = conditionLevelDisplay.value || 'N/A';
+                } else if (pointsInput.dataset.conditionLevel) {
+                    conditionLevel = pointsInput.dataset.conditionLevel;
+                }
+            }
+            const violationValueInput = row.querySelector('.violation-value-input');
+            if (violationValueInput) {
+                violationValue = (actionTaken === 'مخالفة') ? (parseFloat(violationValueInput.value) || 0) : null;
+            }
+            const notesInput = row.querySelector('.notes-input');
+            if (notesInput) {
+                inspectorNotes = notesInput.value || '';
+            }
+            const photoPreviewContainer = row.querySelector('.photo-preview-container');
+            if (photoPreviewContainer) {
+                inspectionPhotoPath = (photoPreviewContainer.dataset.imagePath || '').trim();
+                if (!inspectionPhotoPath) {
+                    const imgElement = photoPreviewContainer.querySelector('img');
+                    if (imgElement && imgElement.src && !imgElement.src.includes('placeholder.png') && imgElement.src.trim() !== '') {
+                        try {
+                            inspectionPhotoPath = new URL(imgElement.src).pathname;
+                        } catch (e) {
+                            inspectionPhotoPath = imgElement.src;
+                        }
                     }
                 }
             }
+            if (isViolation || inspectionPhotoPath.trim() !== '' || inspectorNotes.trim() !== '') {
+                itemsToSave.push({
+                    code_id: codeId,
+                    is_violation: isViolation ? 1 : 0,
+                    action_taken: actionTaken,
+                    condition_level: conditionLevel,
+                    deducted_points: deductedPoints,
+                    violation_value: violationValue,
+                    inspector_notes: inspectorNotes,
+                    inspection_photo_path: inspectionPhotoPath
+                });
+            }
+        });
+
+        const generalNotes = notesTextarea.value;
+        const inspectionType = inspectionTypeSelect.value;
+        const campaignName = campaignNameInput.value;
+        const inspectorId = inspectorIdInput.value;
+
+        let inspectionDate = '';
+        if (typeof inspectionDateInput !== 'undefined' && inspectionDateInput) {
+            inspectionDate = inspectionDateInput.value || '';
+            inspectionDate = inspectionDate.trim();
+            if (inspectionDate) {
+                const ts = Date.parse(inspectionDate);
+                if (!isNaN(ts)) {
+                    const d = new Date(ts);
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    inspectionDate = `${yyyy}-${mm}-${dd}`;
+                } else {
+                    inspectionDate = '';
+                }
+            }
         }
-        if (isViolation || inspectionPhotoPath.trim() !== '' || inspectorNotes.trim() !== '') {
-            itemsToSave.push({
-                code_id: codeId,
-                is_violation: isViolation ? 1 : 0,
-                action_taken: actionTaken,
-                condition_level: conditionLevel,
-                deducted_points: deductedPoints,
-                violation_value: violationValue,
-                inspector_notes: inspectorNotes,
-                inspection_photo_path: inspectionPhotoPath // <-- use the name the server expects
+
+        try {
+            const formData = new FormData();
+            formData.append('action', 'save_inspection_items');
+            formData.append('inspection_id', currentInspectionId);
+            formData.append('items_data', JSON.stringify(itemsToSave));
+            formData.append('notes', generalNotes);
+            formData.append('inspection_type', inspectionType);
+            formData.append('campaign_name', campaignName);
+            formData.append('inspector_user_id', inspectorId);
+            formData.append('updated_by_user_id', loggedInUserId);
+            formData.append('photo_file', currentPdfPath);
+
+            if (inspectionDate) {
+                formData.append('inspection_date', inspectionDate);
+            }
+
+            const response = await fetch('api.php', {
+                method: 'POST',
+                body: formData
             });
+            const data = await response.json();
+            if (data.success) {
+                resultDeducted.textContent = parseFloat(data.results.total_deducted_points || 0).toFixed(2);
+                resultScore.textContent = parseFloat(data.results.final_inspection_score || 0).toFixed(2);
+                resultPercentage.textContent = parseFloat(data.results.percentage_score || 0).toFixed(2) + '%';
+                resultGrade.textContent = data.results.letter_grade;
+                resultCard.textContent = data.results.color_card;
+                resultCritical.textContent = data.results.critical_violations || 0;
+                resultMajor.textContent = data.results.major_violations || 0;
+                resultGeneral.textContent = data.results.general_violations || 0;
+                resultAdministrative.textContent = data.results.administrative_violations || 0;
+                resultNextDate.textContent = data.results.next_inspection_date || 'غير محدد';
+                totalViolationValueInput.value = parseFloat(data.results.total_violation_value || 0).toFixed(2);
+                approvalStatusInput.value = data.results.approval_status || 'Pending';
+                approvedByInput.value = data.results.approved_by_username || '';
+                approvalDateInput.value = data.results.approval_date || '';
+                updatedByInput.value = data.results.updated_by_username || loggedInUserName;
+                resultNotes.value = generalNotes;
+                updatePdfPreview(currentPdfPath);
+                if (parseFloat(data.results.total_violation_value || 0) > 5000) {
+                    totalViolationValueInput.classList.add('high-violation');
+                } else {
+                    totalViolationValueInput.classList.remove('high-violation');
+                }
+                showMessage('تم حفظ البنود وتحديث التفتيش بنجاح', true);
+                approveInspectionBtn.disabled = false;
+                editInspectionBtn.disabled = false;
+            } else {
+                showMessage(data.message || 'فشل حفظ البنود', false);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('حدث خطأ أثناء حفظ البنود', false);
         }
     });
-
-    const generalNotes = notesTextarea.value;
-    const inspectionType = inspectionTypeSelect.value;
-    const campaignName = campaignNameInput.value;
-    const inspectorId = inspectorIdInput.value;
-
-    // ====== NEW: get and normalize inspection_date (YYYY-MM-DD) ======
-    let inspectionDate = '';
-    if (typeof inspectionDateInput !== 'undefined' && inspectionDateInput) {
-        // assume you have an <input id="inspectionDateInput" type="date"> or similar
-        inspectionDate = inspectionDateInput.value || '';
-        inspectionDate = inspectionDate.trim();
-        if (inspectionDate) {
-            // normalize different possible inputs to YYYY-MM-DD
-            const ts = Date.parse(inspectionDate);
-            if (!isNaN(ts)) {
-                const d = new Date(ts);
-                const yyyy = d.getFullYear();
-                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                const dd = String(d.getDate()).padStart(2, '0');
-                inspectionDate = `${yyyy}-${mm}-${dd}`;
-            } else {
-                // invalid -> clear to avoid server validation failure
-                inspectionDate = '';
-            }
-        }
-    }
-    // =================================================================
-
-    try {
-        const formData = new FormData();
-        formData.append('action', 'save_inspection_items');
-        formData.append('inspection_id', currentInspectionId);
-        formData.append('items_data', JSON.stringify(itemsToSave));
-        formData.append('notes', generalNotes);
-        formData.append('inspection_type', inspectionType);
-        formData.append('campaign_name', campaignName);
-        formData.append('inspector_user_id', inspectorId);
-        formData.append('updated_by_user_id', loggedInUserId);
-        formData.append('photo_file', currentPdfPath);
-
-        // ====== NEW: append inspection_date only if present (server validates format) ======
-        if (inspectionDate) {
-            formData.append('inspection_date', inspectionDate);
-        }
-        // =================================================================
-
-        const response = await fetch('api.php', {
-            method: 'POST',
-            body: formData
-        });
-        const data = await response.json();
-        if (data.success) {
-            resultDeducted.textContent = parseFloat(data.results.total_deducted_points || 0).toFixed(2);
-            resultScore.textContent = parseFloat(data.results.final_inspection_score || 0).toFixed(2);
-            resultPercentage.textContent = parseFloat(data.results.percentage_score || 0).toFixed(2) + '%';
-            resultGrade.textContent = data.results.letter_grade;
-            resultCard.textContent = data.results.color_card;
-            resultCritical.textContent = data.results.critical_violations || 0;
-            resultMajor.textContent = data.results.major_violations || 0;
-            resultGeneral.textContent = data.results.general_violations || 0;
-            resultAdministrative.textContent = data.results.administrative_violations || 0;
-            resultNextDate.textContent = data.results.next_inspection_date || 'غير محدد';
-            totalViolationValueInput.value = parseFloat(data.results.total_violation_value || 0).toFixed(2);
-            approvalStatusInput.value = data.results.approval_status || 'Pending';
-            approvedByInput.value = data.results.approved_by_username || '';
-            approvalDateInput.value = data.results.approval_date || '';
-            updatedByInput.value = data.results.updated_by_username || loggedInUserName;
-            resultNotes.value = generalNotes;
-            updatePdfPreview(currentPdfPath);
-            if (parseFloat(data.results.total_violation_value || 0) > 5000) {
-                totalViolationValueInput.classList.add('high-violation');
-            } else {
-                totalViolationValueInput.classList.remove('high-violation');
-            }
-            showMessage('تم حفظ البنود وتحديث التفتيش بنجاح', true);
-            approveInspectionBtn.disabled = false;
-            editInspectionBtn.disabled = false;
-        } else {
-            showMessage(data.message || 'فشل حفظ البنود', false);
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showMessage('حدث خطأ أثناء حفظ البنود', false);
-    }
-});
 
     approveInspectionBtn.addEventListener('click', async function() {
         if (!currentInspectionId) {
@@ -2555,11 +2568,13 @@ saveItemsBtn.addEventListener('click', async function() {
     const urlParams = new URLSearchParams(window.location.search);
     const initialUniqueId = urlParams.get('unique_id');
     const initialInspectionId = urlParams.get('inspection_id');
+    
     if (initialInspectionId) {
         displayInspection(initialInspectionId);
+        setOldInspectionMode();
     } else if (initialUniqueId) {
         licenseNoInput.value = initialUniqueId;
-        searchAndLoadInspection(initialUniqueId);
+        searchForNewInspection(initialUniqueId);
     }
 });
 </script>
