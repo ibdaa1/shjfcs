@@ -857,6 +857,9 @@ input:checked + .slider:before {
                     <button type="button" id="resultsViewPdfBtn" class="btn-secondary hidden">
                         <i class="fas fa-eye"></i> عرض PDF
                     </button>
+                    <button type="button" id="resultsDeletePdfBtn" class="btn-danger hidden">
+                        <i class="fas fa-trash"></i> حذف PDF
+                    </button>
                 </div>
                 <div id="resultsPdfPreview" class="pdf-preview-container hidden">
                     <label>معاينة ملف PDF:</label>
@@ -1062,6 +1065,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsInspectionPdfFileInput = document.getElementById('resultsInspectionPdfFile');
     const resultsUploadPdfBtn = document.getElementById('resultsUploadPdfBtn');
     const resultsViewPdfBtn = document.getElementById('resultsViewPdfBtn');
+    const resultsDeletePdfBtn = document.getElementById('resultsDeletePdfBtn');
     const resultsPdfPreview = document.getElementById('resultsPdfPreview');
     const resultsPdfEmbed = document.getElementById('resultsPdfEmbed');
     const resultsPdfNoPreview = document.getElementById('resultsPdfNoPreview');
@@ -1233,6 +1237,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsPdfNoPreview.style.display = 'none';
             resultsPdfPreview.classList.remove('hidden');
             resultsViewPdfBtn.classList.remove('hidden');
+            resultsDeletePdfBtn.classList.remove('hidden');
           
             currentPdfPath = correctedPath;
         } else {
@@ -1241,6 +1246,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsPdfLink.classList.add('hidden');
             resultsPdfPreview.classList.add('hidden');
             resultsViewPdfBtn.classList.add('hidden');
+            resultsDeletePdfBtn.classList.add('hidden');
         }
     }
 
@@ -1304,6 +1310,48 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error uploading PDF:', error);
             showMessage('حدث خطأ أثناء تحميل الملف.', false);
+        }
+    });
+
+    // ✅ PDF Delete Handler
+    resultsDeletePdfBtn.addEventListener('click', async () => {
+        if (!currentInspectionId) {
+            showMessage('لم يتم العثور على معرف التفتيش.', false);
+            return;
+        }
+        
+        if (!currentPdfPath) {
+            showMessage('لا يوجد ملف PDF لحذفه.', false);
+            return;
+        }
+        
+        if (!confirm('هل أنت متأكد من حذف ملف PDF؟ لن تتمكن من استعادته.')) {
+            return;
+        }
+        
+        try {
+            const formData = new FormData();
+            formData.append('action', 'delete_pdf');
+            formData.append('inspection_id', currentInspectionId);
+            formData.append('pdf_path', currentPdfPath);
+            
+            const response = await fetch('api.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                currentPdfPath = '';
+                updatePdfPreview('');
+                showMessage('تم حذف الملف بنجاح! يمكنك الآن رفع ملف جديد.', true);
+            } else {
+                showMessage(result.message || 'فشل حذف الملف.', false);
+            }
+        } catch (error) {
+            console.error('Error deleting PDF:', error);
+            showMessage('حدث خطأ أثناء حذف الملف.', false);
         }
     });
 
