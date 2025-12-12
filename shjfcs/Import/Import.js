@@ -1,4 +1,6 @@
-// Import.js - handles UI and AJAX for Import.html
+```javascript
+// Import.js
+// يتعامل مع ملفات السيرفر (get_*.php و Import.php) لجلب القيم والعمل على CRUD
 document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('inspectionForm');
   const inspectionsTable = document.querySelector('#inspectionsTable tbody');
@@ -6,47 +8,86 @@ document.addEventListener('DOMContentLoaded', function () {
   const addProductBtn = document.getElementById('addProductBtn');
   const resetBtn = document.getElementById('resetBtn');
 
-  // selects
+  // selects & inputs
   const portsSelect = document.getElementById('entry_port_id');
   const inspectorsSelect = document.getElementById('inspector_emp_id');
   const actionsSelect = document.getElementById('action_taken_id');
   const countriesSelect = document.getElementById('p_country_id');
   const categoriesSelect = document.getElementById('p_category_id');
 
+  const licenseInput = document.getElementById('license_no_input');
+  const uniqueSelect = document.getElementById('unique_id_select');
+
   let editingProductIndex = -1;
   let products = [];
+  let establishments = []; // loaded from server once
 
-  function fetchJSON(url) {
-    return fetch(url).then(r => r.json());
+  // tiny debounce
+  function debounce(fn, delay=300){
+    let t;
+    return (...args) => { clearTimeout(t); t = setTimeout(()=>fn(...args), delay); };
+  }
+
+  function fetchJSON(url){
+    return fetch(url, {cache:'no-cache'}).then(r => {
+      if (!r.ok) throw new Error('Network response was not ok');
+      return r.json();
+    });
   }
 
   function loadLookups() {
+    // ports
     fetchJSON('get_ports.php').then(r => {
       if (Array.isArray(r)) {
-        r.forEach(p => portsSelect.insertAdjacentHTML('beforeend', `<option value="${p.id}">${p.port_name}</option>`));
+        r.forEach(p => portsSelect.insertAdjacentHTML('beforeend', `<option value="${p.id}">${escapeHtml(p.port_name)}</option>`));
       }
-    });
+    }).catch(()=>{});
+
+    // inspectors (expects { data: [...] })
     fetchJSON('get_user_data.php').then(r => {
-      if (Array.isArray(r.data)) {
-        r.data.forEach(u => inspectorsSelect.insertAdjacentHTML('beforeend', `<option value="${u.EmpID}">${u.EmpName}</option>`));
-      }
-    });
+      const list = Array.isArray(r) ? r : (r.data || []);
+      list.forEach(u => inspectorsSelect.insertAdjacentHTML('beforeend', `<option value="${u.EmpID}">${escapeHtml(u.EmpName)}</option>`));
+    }).catch(()=>{});
+
+    // actions (expects array)
     fetchJSON('get_action_types.php').then(r => {
-      if (Array.isArray(r)) {
-        r.forEach(a => actionsSelect.insertAdjacentHTML('beforeend', `<option value="${a.id}">${a.action_name}</option>`));
-      }
-    });
+      if (Array.isArray(r)) r.forEach(a => actionsSelect.insertAdjacentHTML('beforeend', `<option value="${a.id}">${escapeHtml(a.action_name)}</option>`));
+    }).catch(()=>{});
+
+    // countries (expects { data: [...] })
     fetchJSON('get_countries.php').then(r => {
-      if (Array.isArray(r.data)) {
-        r.data.forEach(c => countriesSelect.insertAdjacentHTML('beforeend', `<option value="${c.ID}">${c.ARABIC_NAME}</option>`));
-      }
-    });
+      const list = Array.isArray(r) ? r : (r.data || []);
+      list.forEach(c => countriesSelect.insertAdjacentHTML('beforeend', `<option value="${c.ID}">${escapeHtml(c.ARABIC_NAME)}</option>`));
+    }).catch(()=>{});
+
+    // categories (expects array)
     fetchJSON('get_product_categories.php').then(r => {
-      if (Array.isArray(r)) {
-        r.forEach(c => categoriesSelect.insertAdjacentHTML('beforeend', `<option value="${c.CATEGORY_ID}">${c.CATEGORY_NAME_AR}</option>`));
-      }
-    });
+      if (Array.isArray(r)) r.forEach(c => categoriesSelect.insertAdjacentHTML('beforeend', `<option value="${c.CATEGORY_ID}">${escapeHtml(c.CATEGORY_NAME_AR)}</option>`));
+    }).catch(()=>{});
+
+    // establishments (expects array or {data:[]})
+    fetchJSON('get_establishments.php').then(r => {
+      establishments = Array.isArray(r) ? r : (r.data || []);
+      // do not populate license list here because license is manual input per requirement
+    }).catch(()=>{});
   }
+
+  // when user types license number, filter establishments and fill unique ids
+  const fillUniqueForLicense = debounce(function(){
+    const licenseNo = (licenseInput.value || '').trim();
+    uniqueSelect.innerHTML = '<option value="">-- اختر المعرف الفريد --</option>';
+    if (!licenseNo) return;
+    const list = establishments.filter(e => (e.license_no+'').trim() === licenseNo);
+    list.forEach(e => {
+      const label = `${e.unique_id}${e.facility_name ? ' - ' + e.facility_name : ''}`;
+      uniqueSelect.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(e.unique_id)}">${escapeHtml(label)}</option>`);
+    });
+    // if only one option, auto-select it
+    if (list.length === 1) uniqueSelect.selectedIndex = 1;
+  }, 250);
+
+  licenseInput.addEventListener('input', fillUniqueForLicense);
+  licenseInput.addEventListener('change', fillUniqueForLicense);
 
   function renderProducts() {
     productsTableBody.innerHTML = '';
@@ -85,17 +126,12 @@ document.addEventListener('DOMContentLoaded', function () {
       expiry_date: document.getElementById('p_expiry_date').value || '',
       notes: document.getElementById('p_notes').value || ''
     };
-    if (!product.product_name) {
-      alert('يرجى إدخال اسم المنتج');
-      return;
-    }
+    if (!product.product_name) { alert('يرجى إدخال اسم المنتج'); return; }
     if (editingProductIndex >= 0) {
       products[editingProductIndex] = product;
       editingProductIndex = -1;
       addProductBtn.textContent = 'إضافة منتج';
-    } else {
-      products.push(product);
-    }
+    } else products.push(product);
     clearProductInputs();
     renderProducts();
   });
@@ -103,10 +139,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function clearProductInputs() {
     ['p_product_name','p_brand_name','p_weight','p_quantity','p_country_id','p_category_id','p_production_date','p_expiry_date','p_notes'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) {
-        if (el.tagName === 'SELECT') el.selectedIndex = 0;
-        else el.value = '';
-      }
+      if (!el) return;
+      if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else el.value = '';
     });
   }
 
@@ -138,7 +173,8 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     const payload = {
       ID: document.getElementById('ID').value || null,
-      unique_id: document.getElementById('unique_id').value.trim(),
+      license_no: (document.getElementById('license_no_input').value || '').trim(),
+      unique_id: document.getElementById('unique_id_select').value || null,
       registration_date: document.getElementById('registration_date').value || null,
       entry_port_id: document.getElementById('entry_port_id').value || null,
       system_registration_no: document.getElementById('system_registration_no').value || null,
@@ -150,6 +186,10 @@ document.addEventListener('DOMContentLoaded', function () {
       notes: document.getElementById('notes').value || null,
       products: products
     };
+
+    if (!payload.license_no) { alert('اختر أو أدخل رقم الرخصة'); return; }
+    if (!payload.unique_id) { alert('اختر المعرف الفريد'); return; }
+
     const isUpdate = Boolean(payload.ID);
     const url = 'Import.php?action=' + (isUpdate ? 'update' : 'create');
     fetch(url, {
@@ -178,6 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('ID').value = '';
     editingProductIndex = -1;
     addProductBtn.textContent = 'إضافة منتج';
+    uniqueSelect.innerHTML = '<option value="">-- اختر المعرف الفريد --</option>';
   }
 
   function loadInspections() {
@@ -199,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
           </td>`;
         inspectionsTable.appendChild(tr);
       });
-    });
+    }).catch(()=>{ /* ignore load errors silently */ });
   }
 
   inspectionsTable.addEventListener('click', function (e) {
@@ -209,7 +250,19 @@ document.addEventListener('DOMContentLoaded', function () {
         const d = r.data;
         if (!d) { alert('سجل غير موجود'); return; }
         document.getElementById('ID').value = d.ID;
-        document.getElementById('unique_id').value = d.unique_id || '';
+        // find establishment to set license input and unique select
+        const est = establishments.find(e => (e.unique_id+'') === (d.unique_id+''));
+        if (est) {
+          licenseInput.value = est.license_no || '';
+          // trigger fill
+          fillUniqueForLicense();
+          setTimeout(()=> uniqueSelect.value = d.unique_id || '', 200);
+        } else {
+          // fallback
+          licenseInput.value = '';
+          uniqueSelect.innerHTML = `<option value="${escapeHtml(d.unique_id)}">${escapeHtml(d.unique_id)}</option>`;
+          uniqueSelect.value = d.unique_id || '';
+        }
         document.getElementById('registration_date').value = d.registration_date ? d.registration_date.replace(' ', 'T') : '';
         document.getElementById('entry_port_id').value = d.entry_port_id || '';
         document.getElementById('system_registration_no').value = d.system_registration_no || '';
@@ -222,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
         products = d.products || [];
         renderProducts();
         window.scrollTo({top:0, behavior:'smooth'});
-      });
+      }).catch(()=>{});
     } else if (e.target.matches('.delete-inspection')) {
       const id = e.target.dataset.id;
       if (!confirm('هل تريد حذف هذا الفحص؟')) return;
@@ -232,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function () {
           loadInspections();
           resetForm();
         } else alert('خطأ: ' + (res.error || JSON.stringify(res)));
-      });
+      }).catch(()=>{});
     }
   });
 
