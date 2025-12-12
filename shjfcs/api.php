@@ -1510,6 +1510,52 @@ case 'update_inspection_date':
             echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
             ob_end_flush();
             break;
+        
+        case 'clear_pdf_path':
+            $inspection_id = $_POST['inspection_id'] ?? null;
+            
+            if (!$inspection_id) {
+                $response_data = [
+                    'success' => false,
+                    'message' => 'معرف التفتيش مطلوب.',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+                echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+                ob_end_flush();
+                break;
+            }
+            
+            try {
+                // Update database to clear photo_file
+                $stmt_clear = $conn->prepare("UPDATE tbl_inspections SET photo_file = NULL, updated_at = NOW(), updated_by_user_id = ? WHERE inspection_id = ?");
+                if (!$stmt_clear) {
+                    throw new Exception("Failed to prepare clear statement: " . $conn->error);
+                }
+                
+                $stmt_clear->bind_param("ii", $loggedInUserId, $inspection_id);
+                if (!$stmt_clear->execute()) {
+                    throw new Exception("Failed to clear photo_file: " . $stmt_clear->error);
+                }
+                $stmt_clear->close();
+                
+                $response_data = [
+                    'success' => true,
+                    'message' => 'تم مسح مسار الملف من قاعدة البيانات بنجاح.',
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            } catch (Exception $e) {
+                logError("Error in clear_pdf_path: " . $e->getMessage(), ['inspection_id' => $inspection_id]);
+                $response_data = [
+                    'success' => false,
+                    'message' => 'فشل مسح مسار الملف: ' . $e->getMessage(),
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+            }
+            
+            echo json_encode($response_data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            ob_end_flush();
+            break;
+        
         default:
             logError("Invalid action received.", ['action' => $action]);
             $response_data = [
