@@ -1,86 +1,44 @@
 <?php
-// /health_vet/api/user_data.php - نقطة نهاية لجلب بيانات المستخدم عبر AJAX
-
-// 1. إعدادات PHP الأساسية
-ini_set('display_errors', 0);
-error_reporting(0);
-
-// 2. بدء الجلسة
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// 3. إعداد استجابة JSON
+// get_user_data.php
+// Returns all active users and the current logged-in user (from session) as { data: [...], current: {...} }
 header('Content-Type: application/json; charset=utf-8');
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+try {
+    $dbFile = realpath(__DIR__ . '/../db.php');
+    if (!$dbFile || !file_exists($dbFile)) {
+        throw new Exception("db.php not found");
+    }
+    require_once $dbFile;
+    if (!isset($conn) || !($conn instanceof mysqli)) {
+        throw new Exception("Database connection not available");
+    }
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    // fetch active users
+    $sql = "SELECT EmpID, EmpName, JobTitle, Active FROM Users WHERE Active = 1 ORDER BY EmpName";
+    $res = $conn->query($sql);
+    $users = [];
+    while ($r = $res->fetch_assoc()) $users[] = $r;
 
-// 4. دوال التحقق من الصلاحيات
-function canAdd() {
-    return isset($_SESSION['user']['CanAdd']) && (int)$_SESSION['user']['CanAdd'] === 1;
-}
-function canEdit() {
-    return isset($_SESSION['user']['CanEdit']) && (int)$_SESSION['user']['CanEdit'] === 1;
-}
-function canDelete() {
-    return isset($_SESSION['user']['CanDelete']) && (int)$_SESSION['user']['CanDelete'] === 1;
-}
-function canSendWhatsApp() {
-    return isset($_SESSION['user']['CanSendWhatsApp']) && (int)$_SESSION['user']['CanSendWhatsApp'] === 1;
-}
-function isLicenseManager() {
-    return isset($_SESSION['user']['IsLicenseManager']) && (int)$_SESSION['user']['IsLicenseManager'] === 1;
-}
-function isLicenseInspector() {
-    return isset($_SESSION['user']['IsLicenseInspector']) && (int)$_SESSION['user']['IsLicenseInspector'] === 1;
-}
-function isAdmin() {
-    return isset($_SESSION['user']['IsAdmin']) && (int)$_SESSION['user']['IsAdmin'] === 1;
-}
-function isSuperAdmin() {
-    return isset($_SESSION['user']['IsSuperAdmin']) && (int)$_SESSION['user']['IsSuperAdmin'] === 1;
-}
-function hasSignature() {
-    return isset($_SESSION['user']['HasSignature']) && (int)$_SESSION['user']['HasSignature'] === 1;
-}
+    // current user info from session (if present)
+    $current = null;
+    if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+        $empid = intval($_SESSION['user']['EmpID'] ?? 0);
+        if ($empid > 0) {
+            $stmt = $conn->prepare("SELECT EmpID, EmpName, JobTitle FROM Users WHERE EmpID = ? LIMIT 1");
+            $stmt->bind_param('i', $empid);
+            $stmt->execute();
+            $current = $stmt->get_result()->fetch_assoc() ?: null;
+            $stmt->close();
+        }
+    }
 
-// 5. بناء الاستجابة
-$response = [];
-
-if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
-    $response = [
-        'success' => true,
-        'user_data' => $_SESSION['user'],
-        'permissions' => [
-            'canAdd'            => canAdd(),
-            'canEdit'           => canEdit(),
-            'canDelete'         => canDelete(),
-            'canSendWhatsApp'   => canSendWhatsApp(),
-            'isLicenseManager'  => isLicenseManager(),
-            'isLicenseInspector'=> isLicenseInspector(),
-            'isAdmin'           => isAdmin(),
-            'isSuperAdmin'      => isSuperAdmin(),
-            'hasSignature'      => hasSignature()
-        ]
-    ];
-} else {
-    $response = [
-        'success' => false,
-        'message' => 'User not authenticated.',
-        'user_data' => null,
-        'permissions' => [
-            'canAdd'            => false,
-            'canEdit'           => false,
-            'canDelete'         => false,
-            'canSendWhatsApp'   => false,
-            'isLicenseManager'  => false,
-            'isLicenseInspector'=> false,
-            'isAdmin'           => false,
-            'isSuperAdmin'      => false,
-            'hasSignature'      => false
-        ]
-    ];
+    echo json_encode(['data' => $users, 'current' => $current]);
+    exit;
+} catch (Throwable $ex) {
+    error_log("get_user_data.php error: " . $ex->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'Internal server error']);
+    exit;
 }
-
-// 6. طباعة الاستجابة
-echo json_encode($response, JSON_UNESCAPED_UNICODE);
-exit;
 ?>

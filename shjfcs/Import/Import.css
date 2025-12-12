@@ -1,90 +1,21 @@
-
-```css name=Import.css url=https://github.com/ibdaa1/shjfcs/blob/e54871e7a03a4b221a6c30cb81f46b8f39f83d31/shjfcs/Import/Import.css
-```css
 /* Basic RTL form styles for Import.html */
-body {
-  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-  background: #f6f8fa;
-  margin: 0;
-  padding: 12px;
-  color: #222;
-}
-
-.container{
-  max-width: 1100px;
-  margin: 12px auto;
-  background: #fff;
-  padding: 18px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
+body { font-family: "Segoe UI", Tahoma, Arial, sans-serif; background: #f6f8fa; margin: 0; padding: 12px; color: #222; }
+.container{ max-width: 1100px; margin: 12px auto; background: #fff; padding: 18px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 h1, h2 { margin: 8px 0 16px; color: #0b5ed7; }
-
-.row {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:10px;
-}
+.row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
 .row label { width: 180px; font-weight:600; }
-.row input[type="text"], .row input[type="number"], .row input[type="datetime-local"], .row select, .row textarea, .row input[type="date"] {
-  flex:1;
-  padding:8px;
-  border:1px solid #d0d7de;
-  border-radius:4px;
-  background:#fff;
-}
-
+.row input[type="text"], .row input[type="number"], .row input[type="datetime-local"], .row select, .row textarea, .row input[type="date"] { flex:1; padding:8px; border:1px solid #d0d7de; border-radius:4px; background:#fff; }
 textarea { resize:vertical; }
-
-.product-controls {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:8px;
-  align-items:center;
-}
-.product-controls input, .product-controls select {
-  padding:6px;
-  border:1px solid #d0d7de;
-  border-radius:4px;
-}
-
-button {
-  background:#0b5ed7;
-  color:#fff;
-  border:0;
-  padding:8px 12px;
-  border-radius:4px;
-  cursor:pointer;
-}
+.product-controls { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; align-items:center; }
+.product-controls input, .product-controls select { padding:6px; border:1px solid #d0d7de; border-radius:4px; }
+button { background:#0b5ed7; color:#fff; border:0; padding:8px 12px; border-radius:4px; cursor:pointer; }
 button[type="button"]{ background:#6c757d; }
 button:disabled { opacity:0.6; cursor:not-allowed; }
-
 .form-actions { margin-top:12px; display:flex; gap:8px; justify-content:flex-start; }
-
-table.striped {
-  width:100%;
-  border-collapse:collapse;
-  margin-top:12px;
-}
-table.striped th, table.striped td {
-  border:1px solid #e6edf3;
-  padding:8px;
-  text-align:right;
-}
+table.striped { width:100%; border-collapse:collapse; margin-top:12px; }
+table.striped th, table.striped td { border:1px solid #e6edf3; padding:8px; text-align:right; }
 table.striped tbody tr:nth-child(odd) { background:#fbfdff; }
 table.striped thead { background:#f0f7ff; }
-
-.edit-product, .delete-product, .edit-inspection, .delete-inspection {
-  background: #198754;
-  margin-left:6px;
-}
+.edit-product, .delete-product, .edit-inspection, .delete-inspection { background: #198754; margin-left:6px; }
 .delete-product, .delete-inspection { background:#dc3545; }
-
-@media (max-width:800px){
-  .row { flex-direction:column; align-items:stretch; }
-  .row label { width:auto; }
-  .product-controls { flex-direction:column; align-items:stretch; }
-}
+@media (max-width:800px){ .row { flex-direction:column; align-items:stretch; } .row label { width:auto; } .product-controls { flex-direction:column; align-items:stretch; } }
