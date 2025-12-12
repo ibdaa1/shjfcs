@@ -1958,6 +1958,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // ✅ Add confirmation dialog before creating inspection
+        if (!confirm('هل تريد إنشاء تفتيش؟\n\nسيتم حفظ البيانات في قاعدة البيانات حتى لو لم تكمل بنود التفتيش.')) {
+            showMessage('تم إلغاء إنشاء التفتيش', false);
+            return;
+        }
+        
         // ✅ تحقق إضافي من معرف المفتش
         const inspectorId = inspectorIdInput.value.trim();
         if (!inspectorId || inspectorId === '0' || inspectorId === '') {
